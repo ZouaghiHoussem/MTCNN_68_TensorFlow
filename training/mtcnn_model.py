@@ -3,8 +3,8 @@ import tensorflow as tf
 from tensorflow.contrib import slim
 import numpy as np
 num_keep_radio = 0.7
-from .params import *
 
+landmark_number = 68*2
 #define prelu
 def prelu(inputs):
     alphas = tf.get_variable("alphas", shape=inputs.get_shape()[-1], dtype=tf.float32, initializer=tf.constant_initializer(0.25))

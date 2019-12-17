@@ -5,12 +5,12 @@ set -e
 echo "Hello! I will prepare training data and starting to training step by step."
 
 # 1. checking dataset if OK
-if [ ! -d "./dataset/WIDER_train/images" ]; then
-	echo "Error: The WIDER_train/images is not exist. Read dataset/README.md to get useful info."
+if [ ! -d "./dataset/UTK_part1" ]; then
+	echo "Error: PLease add part one of UTK dataset. Read dataset/README.md to get useful info."
 	exit
 fi
-if [ ! -d "./dataset/lfw_5590" ]; then
-	echo "Error: The lfw_5590 is not exist. Read dataset/README.md to get useful info."
+if [ ! -d "./dataset/UTK_part2" ]; then
+	echo "Error: PLease add part two of UTK dataset. Read dataset/README.md to get useful info."
 	exit
 fi
 echo "Checking dataset pass."
