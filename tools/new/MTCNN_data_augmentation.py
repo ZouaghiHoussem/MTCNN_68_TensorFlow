@@ -35,30 +35,31 @@ for index,line in enumerate(open(txt, 'r')):
     if(face_locations):
         # Detected bounding box
         bbox_str="{} {} {} {}".format(face_locations[0][1],face_locations[0][3],face_locations[0][2],face_locations[0][0])
-        cv2.circle(image, (int(face_locations[0][1]),int(face_locations[0][2])), 3, (255,0,0))
-        cv2.circle(image, (int(face_locations[0][3]),int(face_locations[0][0])), 3, (255,0,0))
+        cv2.circle(image, (int(face_locations[0][1]),int(face_locations[0][2])), 3, (0,0,0))
+        cv2.circle(image, (int(face_locations[0][3]),int(face_locations[0][0])), 3, (0,0,0))
         #print (bbox_str)
-
-        # Loaded bounding
-        #cv2.circle(image, (int(components[1]),int(components[3])), 3, (0,0,255))
-        #cv2.circle(image, (int(components[2]),int(components[4])), 3, (0,0,255))
+        print(line)
+        # show landmarks
+        lands_2d = np.array(components[1:]).reshape(-1,2)
+        for pt in lands_2d:
+            cv2.circle(image, (int(pt[0]),int(pt[1])), 3, (0,0,255))
 
         # load landmarks
         landmarks=" ".join(components[1:])
         #print (landmarks)
 
         #write the line
-        line = "{} {} {}\n".format(data_part+components[0],bbox_str,landmarks)
-        augmented.write(line)        
-        print(line)
+        #line = "{} {} {}\n".format(data_part+components[0],bbox_str,landmarks)
+        #augmented.write(line)        
+        #print(line)
 
         #show in opencv
-        #cv2.imshow('image',image)
-        #cv2.waitKey(0)
-        #cv2.destroyAllWindows()
+        cv2.imshow('image',image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-        #if(index>5):
-        #    break
+        if(index>5):
+            break
     else :
         print ("-----------------------------Bouniding box not found")
 '''

@@ -2,14 +2,11 @@ import cv2
 import os
 import numpy as np
 
-txt = '/home/hzouaghi/Documents/deepneuralnetwork/mtcnn_tf/dataset/landmark_list_aumented_part3_1.txt'
+#txt = 'dataset/landmark_list_part2_augmented.txt'#testImageList.txt'
 
+#txt = 'dataset/trainImageList.txt'
 
-from mtcnn.mtcnn import MTCNN
-import face_recognition
-
-# initialise the detector class.
-detector = MTCNN()
+txt = '/home/hzouaghi/Documents/DATAs/Face_detection/300wDlib/UTK_dlib_train_dataset.txt'
 
 # load an image as an array
 
@@ -23,23 +20,39 @@ for index,line in enumerate(open(txt, 'r')):
     img_path = os.path.join(dirname, components[0])  # file path
 
     # prepare the image
-    image = face_recognition.load_image_file(img_path)
+    image = cv2.imread(img_path)
+
     # detect faces from input image.
 
     # Detected bounding box
-    cv2.circle(image, (int(components[1]),int(components[3])), 3, (0,255,0))
-    cv2.circle(image, (int(components[2]),int(components[4])), 3, (0,255,0))
+    left= int(components[1])
+    top= int(components[2])
+    right= int(components[3])
+    bottom= int(components[4])
 
-    # Loaded bounding
-    cv2.circle(image, (int(components[5]),int(components[7])), 3, (0,0,255))
-    cv2.circle(image, (int(components[6]),int(components[8])), 3, (0,0,255))
+    #show corners
+    #cv2.circle(image,(left,right), radius=2, color=(0,255,0))
+    #cv2.circle(image,(top,bottom), radius=2, color=(0,0,255))
+    
+    # show bounding box
+    cv2.rectangle(image, (left, right), (top, bottom), (0, 255, 0), 2)
 
+ 
+    # drow landmarks
+    landmarks= np.array(components[5:]).reshape(-1,2)
+    for pt in landmarks:
+        # create and draw dot
+        pt[0] = round(float(pt[0]))
+        pt[1] = round(float(pt[1]))
+
+        dot = cv2.circle(image,(int(pt[0]),int(pt[1])), radius=2, color=(255,0,0))
+ 
     #show in opencv
     cv2.imshow('image',image)
     cv2.waitKey(0)
 
 
-    if(index>5):
+    if(index>50):
         break
 cv2.destroyAllWindows()
 '''
