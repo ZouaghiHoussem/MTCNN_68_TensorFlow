@@ -57,6 +57,7 @@ def flip_68_landmarks(landmarks):
 # all mini-batch mirror
 def random_flip_images(image_batch,label_batch,landmark_batch):
     #mirror
+    print ("-----------------1 --------------------")
     if np.random.choice([0,1]) > 0:
         num_images = image_batch.shape[0]
         fliplandmarkindexes = np.where(label_batch==-2)[0]
@@ -75,7 +76,8 @@ def random_flip_images(image_batch,label_batch,landmark_batch):
             #landmark_[[3, 4]] = landmark_[[4, 3]]#left mouth<->right mouth
             landmark_=flip_68_landmarks(landmark_)
             landmark_batch[i] = landmark_.ravel()
-        
+    print ("-----------------2 --------------------")
+
     return image_batch,landmark_batch
 
 def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01, gpus=""):
@@ -89,6 +91,8 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
         dataset_dir = os.path.join(dataPath, 'all.tfrecord')
         total_num = sum(1 for _ in tf.python_io.tf_record_iterator(dataset_dir))
         image_batch, label_batch, bbox_batch, landmark_batch = read_single_tfrecord(dataset_dir, config.BATCH_SIZE, net)
+        print ("-----------------94 ={}--------------------".format(landmark_batch.shape))
+
     elif net in ['rnet', 'onet']: # RNet and ONet use 4 tfrecords to get data
         pos_dir = os.path.join(dataPath, 'pos.tfrecord')
         part_dir = os.path.join(dataPath, 'part.tfrecord')
@@ -101,7 +105,8 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
         neg_batch_size = int(np.ceil(config.BATCH_SIZE*neg_ratio))
         landmark_batch_size = int(np.ceil(config.BATCH_SIZE*landmark_ratio))
         batch_sizes = [pos_batch_size, part_batch_size, neg_batch_size, landmark_batch_size]
-        image_batch, label_batch, bbox_batch, landmark_batch = read_multi_tfrecords(dataset_dirs, batch_sizes, net)        
+        image_batch, label_batch, bbox_batch, landmark_batch = read_multi_tfrecords(dataset_dirs, batch_sizes, net)
+        
         total_num = 0
         for d in dataset_dirs:
             total_num += sum(1 for _ in tf.python_io.tf_record_iterator(d))
@@ -158,7 +163,11 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
             i = i + 1
             if coord.should_stop():
                 break
+            print ("-----------------163 {} {}--------------------".format(image_batch.shape,landmark_batch.shape))
+
             image_batch_array, label_batch_array, bbox_batch_array,landmark_batch_array = sess.run([image_batch, label_batch, bbox_batch,landmark_batch])
+            print ("-----------------166 --------------------")
+
             #random flip
             image_batch_array,landmark_batch_array = random_flip_images(image_batch_array,label_batch_array,landmark_batch_array)
             '''
@@ -170,7 +179,10 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
             print bbox_batch_array[0]
             print landmark_batch_array[0]
             '''
+            print ("-----------------179 --------------------")
+
             _,_,summary = sess.run([train_op, lr_op ,summary_op], feed_dict={input_image: image_batch_array, label: label_batch_array, bbox_target: bbox_batch_array,landmark_target:landmark_batch_array})
+            print ("-----------------182 --------------------")
             
             if (step+1) % display == 0:
                 #acc = accuracy(cls_pred, labels_batch)

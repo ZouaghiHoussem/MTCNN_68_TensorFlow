@@ -3,8 +3,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 import os
-from .params import *
-
+landmark_number = 68*2
 # for PNet
 def read_single_tfrecord(tfrecord_file, batch_size, net):
     # generate a input queue
