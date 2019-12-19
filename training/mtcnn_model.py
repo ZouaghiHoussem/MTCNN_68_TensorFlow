@@ -90,6 +90,9 @@ def bbox_ohem(bbox_pred,bbox_target,label):
 
 def landmark_ohem(landmark_pred,landmark_target,label):
     #keep label =-2  then do landmark detection
+
+    print(" OHEM++++++++++pred {} target {}".format(landmark_pred.shape,landmark_target.shape))
+
     ones = tf.ones_like(label,dtype=tf.float32)
     zeros = tf.zeros_like(label,dtype=tf.float32)
     valid_inds = tf.where(tf.equal(label,-2),ones,zeros)
@@ -115,6 +118,8 @@ def cal_accuracy(cls_prob,label):
 #construct Pnet
 #label:batch
 def P_Net(inputs, label=None, bbox_target=None, landmark_target=None, training=True):
+    print(" PNET++++++++++target {} ".format(landmark_target.shape))
+
     #define common param
     with slim.arg_scope([slim.conv2d],
                         activation_fn=prelu,

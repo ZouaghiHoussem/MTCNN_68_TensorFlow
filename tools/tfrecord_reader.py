@@ -6,6 +6,7 @@ import os
 landmark_number = 68*2
 # for PNet
 def read_single_tfrecord(tfrecord_file, batch_size, net):
+    print('---------------read single----------------')
     # generate a input queue
     # each epoch shuffle
     filename_queue = tf.train.string_input_producer([tfrecord_file],shuffle=True)
@@ -35,7 +36,7 @@ def read_single_tfrecord(tfrecord_file, batch_size, net):
 
     label = tf.cast(image_features['image/label'], tf.float32)
     roi = tf.cast(image_features['image/roi'],tf.float32)
-    landmark = tf.cast(image_features['image/landmark'],tf.float32)
+    landmark = tf.cast(image_features['image/landmark'],tf.float64)
     image, label,roi,landmark = tf.train.batch(
         [image, label,roi,landmark],
         batch_size=batch_size,
@@ -44,7 +45,11 @@ def read_single_tfrecord(tfrecord_file, batch_size, net):
     )
     label = tf.reshape(label, [batch_size])
     roi = tf.reshape(roi,[batch_size,4])
+    print("---------------read single{}----------------".format(landmark.shape))
+
     landmark = tf.reshape(landmark,[batch_size,landmark_number])
+    print("---------------read single 2{}----------------".format(landmark.shape))
+
     return image, label, roi,landmark
 
 def read_multi_tfrecords(tfrecord_files, batch_sizes, net):

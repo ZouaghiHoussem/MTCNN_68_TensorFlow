@@ -42,7 +42,11 @@ def gen_landmark_data(srcTxt, net, augment=False):
         gt_box = np.array([bbox.left, bbox.top, bbox.right, bbox.bottom])
         f_face = img[bbox.top: bbox.bottom+1, bbox.left: bbox.right+1]
         print("-----{}".format(sizeOfNet[net]))
-        f_face = cv2.resize(f_face, (sizeOfNet[net], sizeOfNet[net]))
+        try:
+            f_face = cv2.resize(f_face, (sizeOfNet[net], sizeOfNet[net]))
+        except:
+            print("An exception occurred")
+            continue        
         landmark = np.zeros((landmark_number, 2))
         #normalize
         for index, one in enumerate(landmarkGt):

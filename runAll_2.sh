@@ -4,33 +4,21 @@ set -e
 
 echo "Hello! I will prepare training data and starting to training step by step."
 
-# 1. checking dataset if OK
-if [ ! -d "./dataset/UTK_part1" ]; then
-	echo "Error: PLease add part one of UTK dataset. Read dataset/README.md to get useful info."
-	exit
-fi
-if [ ! -d "./dataset/UTK_part2" ]; then
-	echo "Error: PLease add part two of UTK dataset. Read dataset/README.md to get useful info."
-	exit
-fi
-echo "Checking dataset pass."
-if [ -d "./tmp" ]; then
-	echo "Warning: The tmp folder is not empty. A good idea is to run ./clearAll.sh to clear it before training."
-fi
 
 # 2. stage: P-Net
 
 ### generate training data(Face Detection Part) for PNet
-###---- echo "Preparing P-Net training data: bbox"
-###---- python prepare_data/gen_hard_bbox_pnet.py
+### echo "Preparing P-Net training data: bbox"
+### python prepare_data/gen_hard_bbox_pnet.py
 
 ### generate training data(Face Landmark Detection Part) for PNet
-###---- echo "Preparing P-Net training data: landmark"
-###---- python prepare_data/gen_landmark_aug.py --stage=pnet
+echo "Preparing P-Net training data: landmark"
+python prepare_data/gen_landmark_aug.py --stage=pnet
 
 ### generate tfrecord file for tf training
-###---- echo "Preparing P-Net tfrecord file"
-###---- python prepare_data/gen_tfrecords.py --stage=pnet
+echo "Preparing P-Net tfrecord file"
+python prepare_data/gen_tfrecords.py --stage=pnet
+
 ### start to training P-Net
 echo "Start to training P-Net"
 python training/train.py --stage=pnet
