@@ -57,7 +57,7 @@ def flip_68_landmarks(landmarks):
 # all mini-batch mirror
 def random_flip_images(image_batch,label_batch,landmark_batch):
     #mirror
-    print ("-----------------1 --------------------")
+    #print("-----------------1 --------------------")
     if np.random.choice([0,1]) > 0:
         num_images = image_batch.shape[0]
         fliplandmarkindexes = np.where(label_batch==-2)[0]
@@ -76,7 +76,7 @@ def random_flip_images(image_batch,label_batch,landmark_batch):
             #landmark_[[3, 4]] = landmark_[[4, 3]]#left mouth<->right mouth
             landmark_=flip_68_landmarks(landmark_)
             landmark_batch[i] = landmark_.ravel()
-    print ("-----------------2 --------------------")
+    #print ("-----------------2 --------------------")
 
     return image_batch,landmark_batch
 
@@ -91,7 +91,7 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
         dataset_dir = os.path.join(dataPath, 'all.tfrecord')
         total_num = sum(1 for _ in tf.python_io.tf_record_iterator(dataset_dir))
         image_batch, label_batch, bbox_batch, landmark_batch = read_single_tfrecord(dataset_dir, config.BATCH_SIZE, net)
-        print ("-----------------94 ={}--------------------".format(landmark_batch.shape))
+        #print ("-----------------94 ={}--------------------".format(landmark_batch.shape))
 
     elif net in ['rnet', 'onet']: # RNet and ONet use 4 tfrecords to get data
         pos_dir = os.path.join(dataPath, 'pos.tfrecord')
@@ -128,7 +128,7 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
     bbox_target = tf.placeholder(tf.float32, shape=[config.BATCH_SIZE, 4]
         , name='bbox_target')
     landmark_target = tf.placeholder(tf.float32,shape=[config.BATCH_SIZE,landmark_number],name='landmark_target')
-    print ("-----------------130 ={}--------------------".format(landmark_target.shape))
+    #print ("-----------------130 ={}--------------------".format(landmark_target.shape))
 
     #class,regression
     cls_loss_op,bbox_loss_op,landmark_loss_op,L2_loss_op,accuracy_op = netFactory(input_image, label, bbox_target,landmark_target,training=True)
@@ -166,13 +166,13 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
             i = i + 1
             if coord.should_stop():
                 break
-            print ("-----------------169 sess.run: {} {} {} {}--------------------".format(image_batch.shape,label_batch.shape,bbox_batch.shape,landmark_batch.shape))
+            #print ("-----------------169 sess.run: {} {} {} {}--------------------".format(image_batch.shape,label_batch.shape,bbox_batch.shape,landmark_batch.shape))
             image_batch_array, label_batch_array, bbox_batch_array,landmark_batch_array = sess.run([image_batch, label_batch, bbox_batch,landmark_batch])
 
             #random flip
-            print ("-----------------173:random_flip_images --------------------")
+            #print ("-----------------173:random_flip_images --------------------")
             image_batch_array,landmark_batch_array = random_flip_images(image_batch_array,label_batch_array,landmark_batch_array)
-            
+            '''
             print ("----------------- --------------------")
             print (image_batch_array.shape)
             print (label_batch_array.shape)
@@ -182,11 +182,11 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
             print (bbox_batch_array[0])
             print (landmark_batch_array[0])
             print ("----------------- --------------------")
-
-            print ("-----------------186 --------------------")
+			'''
+            #print ("-----------------186 --------------------")
             _,_,summary = sess.run([train_op, lr_op ,summary_op], feed_dict={input_image: image_batch_array, label: label_batch_array, bbox_target: bbox_batch_array,landmark_target:landmark_batch_array})
             
-            print ("-----------------189 sess.run --------------------")
+            #print ("-----------------189 sess.run --------------------")
             if (step+1) % display == 0:
                 #acc = accuracy(cls_pred, labels_batch)
                 cls_loss, bbox_loss,landmark_loss,L2_loss,lr,acc = sess.run([cls_loss_op, bbox_loss_op,landmark_loss_op,L2_loss_op,lr_op,accuracy_op],
