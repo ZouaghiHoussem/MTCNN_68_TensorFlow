@@ -36,23 +36,18 @@ def train_model(baseLr, loss, data_num):
     train_op = optimizer.minimize(loss, global_step)
     return train_op, lr_op
 
+
 def flip_68_landmarks(landmarks):
     _landmarks= landmarks
     _landmarks[0:8,[0, 1]] = _landmarks[0:8,[1, 0]]
     _landmarks[9:27,[0, 1]] = _landmarks[9:27,[1, 0]]
     _landmarks[31:33,[0, 1]] = _landmarks[31:33,[1, 0]]
-    _landmarks[34:48,[0, 1]] = _landmarks[34:48,[1, 0]]
-    _landmarks[34:48,[0, 1]] = _landmarks[34:48,[1, 0]]
-    _landmarks[48:51,[0, 1]] = _landmarks[48:51,[1, 0]]
-    _landmarks[52:54,[0, 1]] = _landmarks[52:54,[1, 0]]
-    _landmarks[55:57,[0, 1]] = _landmarks[55:57,[1, 0]]
-    _landmarks[58:60,[0, 1]] = _landmarks[58:60,[1, 0]]
-    _landmarks[61:62,[0, 1]] = _landmarks[61:62,[1, 0]]
-    _landmarks[63:64,[0, 1]] = _landmarks[63:64,[1, 0]]
-    _landmarks[65:66,[0, 1]] = _landmarks[65:66,[1, 0]]
+    _landmarks[34:51,[0, 1]] = _landmarks[34:51,[1, 0]]
+    _landmarks[52:57,[0, 1]] = _landmarks[52:57,[1, 0]]
+    _landmarks[58:62,[0, 1]] = _landmarks[58:62,[1, 0]]
+    _landmarks[63:66,[0, 1]] = _landmarks[63:66,[1, 0]]
     _landmarks[67,[0, 1]] = _landmarks[67,[1, 0]]
     return _landmarks
-
 
 # all mini-batch mirror
 def random_flip_images(image_batch,label_batch,landmark_batch):
@@ -91,13 +86,14 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
         dataset_dir = os.path.join(dataPath, 'all.tfrecord')
         total_num = sum(1 for _ in tf.python_io.tf_record_iterator(dataset_dir))
         image_batch, label_batch, bbox_batch, landmark_batch = read_single_tfrecord(dataset_dir, config.BATCH_SIZE, net)
-        #print ("-----------------94 ={}--------------------".format(landmark_batch.shape))
 
     elif net in ['rnet', 'onet']: # RNet and ONet use 4 tfrecords to get data
         pos_dir = os.path.join(dataPath, 'pos.tfrecord')
         part_dir = os.path.join(dataPath, 'part.tfrecord')
         neg_dir = os.path.join(dataPath, 'neg.tfrecord')
         landmark_dir = os.path.join(dataPath, 'landmark.tfrecord')
+        #print ("-----------------101 ={}--------------------".format(landmark_dir))
+
         dataset_dirs = [pos_dir, part_dir, neg_dir, landmark_dir]
         pos_ratio, part_ratio, landmark_ratio, neg_ratio = 1.0/6, 1.0/6, 1.0/6, 3.0/6
         pos_batch_size = int(np.ceil(config.BATCH_SIZE*pos_ratio))
@@ -106,6 +102,7 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
         landmark_batch_size = int(np.ceil(config.BATCH_SIZE*landmark_ratio))
         batch_sizes = [pos_batch_size, part_batch_size, neg_batch_size, landmark_batch_size]
         image_batch, label_batch, bbox_batch, landmark_batch = read_multi_tfrecords(dataset_dirs, batch_sizes, net)
+
 
         total_num = 0
         for d in dataset_dirs:
@@ -168,21 +165,27 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
                 break
             #print ("-----------------169 sess.run: {} {} {} {}--------------------".format(image_batch.shape,label_batch.shape,bbox_batch.shape,landmark_batch.shape))
             image_batch_array, label_batch_array, bbox_batch_array,landmark_batch_array = sess.run([image_batch, label_batch, bbox_batch,landmark_batch])
-
+            #print ("----------------- Before flipping--------------------")
+            #print (image_batch_array.shape)
+            #print (label_batch_array.shape)
+            #print (bbox_batch_array.shape)
+            #print (landmark_batch_array.shape)
+            #print (label_batch_array[0])
+            #print (bbox_batch_array[0])
+            #print (landmark_batch_array[0])
             #random flip
             #print ("-----------------173:random_flip_images --------------------")
             image_batch_array,landmark_batch_array = random_flip_images(image_batch_array,label_batch_array,landmark_batch_array)
-            '''
-            print ("----------------- --------------------")
-            print (image_batch_array.shape)
-            print (label_batch_array.shape)
-            print (bbox_batch_array.shape)
-            print (landmark_batch_array.shape)
-            print (label_batch_array[0])
-            print (bbox_batch_array[0])
-            print (landmark_batch_array[0])
-            print ("----------------- --------------------")
-			'''
+      
+            #print ("----------------- after filiping --------------------")
+            #print (image_batch_array.shape)
+            #print (label_batch_array.shape)
+            #print (bbox_batch_array.shape)
+            #print (landmark_batch_array.shape)
+            #print (label_batch_array[0])
+            #print (bbox_batch_array[0])
+            #print (landmark_batch_array[0])
+
             #print ("-----------------186 --------------------")
             _,_,summary = sess.run([train_op, lr_op ,summary_op], feed_dict={input_image: image_batch_array, label: label_batch_array, bbox_target: bbox_batch_array,landmark_target:landmark_batch_array})
             
@@ -191,6 +194,8 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
                 #acc = accuracy(cls_pred, labels_batch)
                 cls_loss, bbox_loss,landmark_loss,L2_loss,lr,acc = sess.run([cls_loss_op, bbox_loss_op,landmark_loss_op,L2_loss_op,lr_op,accuracy_op],
                                                              feed_dict={input_image: image_batch_array, label: label_batch_array, bbox_target: bbox_batch_array, landmark_target: landmark_batch_array})                
+                #print(" bbox loss: {}, landmark loss: {},L2 loss: {}".format((bbox_loss, landmark_loss, L2_loss)))
+
                 print("%s [%s] Step: %d, accuracy: %3f, cls loss: %4f, bbox loss: %4f, landmark loss: %4f,L2 loss: %4f,lr:%f " % (
                 datetime.now(), net, step+1, acc, cls_loss, bbox_loss, landmark_loss, L2_loss, lr))
             #save every two epochs

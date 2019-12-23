@@ -4,14 +4,14 @@ import numpy as np
 
 #txt = 'dataset/landmark_list_part2_augmented.txt'#testImageList.txt'
 
-#txt = 'dataset/trainImageList.txt'
+#txt = '/home/hzouaghi/Documents/deepneuralnetwork/mtcnn_tf/dataset/trainImageList.txt'
 
-txt = '/home/hzouaghi/Documents/DATAs/Face_detection/300wDlib/UTK_dlib_train_dataset.txt'
+txt = '/home/hzouaghi/Documents/deepneuralnetwork/MTCNN_68_TensorFlow/dataset/lfw_68_train_dataset.txt'
 
 # load an image as an array
 
 dirname = os.path.dirname(txt)
-
+print(dirname)
 
 #for line in open(txt, 'r'):
 for index,line in enumerate(open(txt, 'r')):
@@ -42,8 +42,8 @@ for index,line in enumerate(open(txt, 'r')):
     landmarks= np.array(components[5:]).reshape(-1,2)
     for pt in landmarks:
         # create and draw dot
-        pt[0] = round(float(pt[0]))
-        pt[1] = round(float(pt[1]))
+        pt[0] = int(round(float(pt[0])))
+        pt[1] = int(round(float(pt[1])))
 
         dot = cv2.circle(image,(int(pt[0]),int(pt[1])), radius=2, color=(255,0,0))
  

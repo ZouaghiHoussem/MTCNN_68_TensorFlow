@@ -77,7 +77,7 @@ def getBboxLandmarkFromTxt(txt, with_landmark=True):
             yield (img_path, BBox(bbox))
             continue
         number_landmark = len(components[5:])/2 # count landmarks from the file
-        print("----------------------orginal nb{} , and  currrent nb = {}".format(len(components[5:]),number_landmark))
+        #print("----------------------orginal nb{} , and  currrent nb = {}".format(len(components[5:]),number_landmark))
         landmark = np.zeros((number_landmark, 2))
         for index in range(0, number_landmark):
             rv = (float(components[5+2*index]), float(components[5+2*index+1]))

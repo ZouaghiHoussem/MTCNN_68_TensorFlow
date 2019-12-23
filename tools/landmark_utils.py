@@ -42,21 +42,16 @@ def rotate(img, bbox, landmark, alpha):
     #crop face 
     face = img_rotated_by_alpha[bbox.top:bbox.bottom+1,bbox.left:bbox.right+1]
     return (face, landmark_)
-
+    
 def flip_68_landmarks(landmarks):
     _landmarks= landmarks
     _landmarks[0:8,[0, 1]] = _landmarks[0:8,[1, 0]]
     _landmarks[9:27,[0, 1]] = _landmarks[9:27,[1, 0]]
     _landmarks[31:33,[0, 1]] = _landmarks[31:33,[1, 0]]
-    _landmarks[34:48,[0, 1]] = _landmarks[34:48,[1, 0]]
-    _landmarks[34:48,[0, 1]] = _landmarks[34:48,[1, 0]]
-    _landmarks[48:51,[0, 1]] = _landmarks[48:51,[1, 0]]
-    _landmarks[52:54,[0, 1]] = _landmarks[52:54,[1, 0]]
-    _landmarks[55:57,[0, 1]] = _landmarks[55:57,[1, 0]]
-    _landmarks[58:60,[0, 1]] = _landmarks[58:60,[1, 0]]
-    _landmarks[61:62,[0, 1]] = _landmarks[61:62,[1, 0]]
-    _landmarks[63:64,[0, 1]] = _landmarks[63:64,[1, 0]]
-    _landmarks[65:66,[0, 1]] = _landmarks[65:66,[1, 0]]
+    _landmarks[34:51,[0, 1]] = _landmarks[34:51,[1, 0]]
+    _landmarks[52:57,[0, 1]] = _landmarks[52:57,[1, 0]]
+    _landmarks[58:62,[0, 1]] = _landmarks[58:62,[1, 0]]
+    _landmarks[63:66,[0, 1]] = _landmarks[63:66,[1, 0]]
     _landmarks[67,[0, 1]] = _landmarks[67,[1, 0]]
     return _landmarks
 

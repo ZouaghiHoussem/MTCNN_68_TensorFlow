@@ -24,19 +24,20 @@ ap.add_argument("-o", "--output", required=True,
 args = vars(ap.parse_args())
 '''
 #parent folder
-path = '/home/hzouaghi/Documents/DATAs/Face_detection/300wDlib'
-image_source_folder='UTK'
-image_save_folder='UTK_cropped_train'
+path = '/home/hzouaghi/Documents/deepneuralnetwork/mtcnn_tf/dataset'
+image_source_folder='lfw_5590'
+save_image_path='../../dataset'
+image_save_folder='LFW_559'
 # output file
-output_file_path = 'UTK_dlib_train_dataset.txt'
+output_file_path = 'lfw_68_train_dataset.txt'
 showImage = False
 
 
 #train folder
 source_path= os.path.join(path, image_source_folder)
-export_path= os.path.join(path, image_save_folder)
+export_path= os.path.join(save_image_path, image_save_folder)
 
-output_file = open(os.path.join(path, output_file_path) ,"w+")
+output_file = open(os.path.join(save_image_path, output_file_path) ,"w+")
 
 images_paths = [f for f in os.listdir(source_path) if os.path.isfile(os.path.join(source_path, f))]
 
@@ -72,15 +73,20 @@ shape_predictor_path = os.path.join(os.path.abspath('./'),'shPredictor.dat')
 predictor = dlib.shape_predictor(shape_predictor_path)
 
 
-max_files=12800
+max_files=1000
 for _index,image_path in enumerate(images_paths):
     
     # load the input image, resize it, and convert it to grayscale
     _path=os.path.join(source_path, image_path)
 
     image = cv2.imread(_path)
-    #image = imutils.resize(image, width=250)
-    image= crop_align_image(image,predictor,250)
+    
+    ## used if you want to crop your image
+    ##image= crop_align_image(image,predictor,250)
+    
+    ##image = imutils.resize(image, width=800)
+
+
     if( isinstance(image, bool)):
         continue 
     #image = imutils.resize(image, width=500)
@@ -127,11 +133,12 @@ for _index,image_path in enumerate(images_paths):
                 cv2.circle(image, (x, y), 1, (255,255,0), -1)
             cv2.imshow("Output", image)
             cv2.waitKey(0)
+        cv2.imwrite(os.path.join(export_path,image_path),image)
+        print ("------------ Faces was saved -----------------") 
 
     else:
         print ("------------ Faces was not found -----------------") 
 
-    cv2.imwrite(os.path.join(export_path,image_path),image)
 
     if (_index>max_files):
         break

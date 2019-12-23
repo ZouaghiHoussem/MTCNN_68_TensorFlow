@@ -303,8 +303,8 @@ class MtcnnDetector(object):
         w = boxes[:,2] - boxes[:,0] + 1
         #height
         h = boxes[:,3] - boxes[:,1] + 1
-        landmark[:,0::2] = (np.tile(w,(5,1)) * landmark[:,0::2].T + np.tile(boxes[:,0],(5,1)) - 1).T
-        landmark[:,1::2] = (np.tile(h,(5,1)) * landmark[:,1::2].T + np.tile(boxes[:,1],(5,1)) - 1).T        
+        landmark[:,0::2] = (np.tile(w,(68,1)) * landmark[:,0::2].T + np.tile(boxes[:,0],(68,1)) - 1).T
+        landmark[:,1::2] = (np.tile(h,(68,1)) * landmark[:,1::2].T + np.tile(boxes[:,1],(68,1)) - 1).T        
         boxes_c = self.calibrate_box(boxes, reg)
         boxes = boxes[py_nms(boxes, 0.6, "Minimum")]
         keep = py_nms(boxes_c, 0.6, "Minimum")

@@ -6,13 +6,15 @@ import os
 landmark_number = 68*2
 # for PNet
 def read_single_tfrecord(tfrecord_file, batch_size, net):
-    print('---------------read single----------------')
+    #print('---------------read single----------------')
     # generate a input queue
     # each epoch shuffle
     filename_queue = tf.train.string_input_producer([tfrecord_file],shuffle=True)
+
     # read tfrecord
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
+
     image_features = tf.parse_single_example(
         serialized_example,
         features={
@@ -22,6 +24,7 @@ def read_single_tfrecord(tfrecord_file, batch_size, net):
             'image/landmark': tf.FixedLenFeature([landmark_number],tf.float32)
         }
     )
+
     if net == 'pnet':
         image_size = 12
     elif net == 'rnet':
@@ -36,7 +39,7 @@ def read_single_tfrecord(tfrecord_file, batch_size, net):
 
     label = tf.cast(image_features['image/label'], tf.float32)
     roi = tf.cast(image_features['image/roi'],tf.float32)
-    landmark = tf.cast(image_features['image/landmark'],tf.float64)
+    landmark = tf.cast(image_features['image/landmark'],tf.float32)
     image, label,roi,landmark = tf.train.batch(
         [image, label,roi,landmark],
         batch_size=batch_size,
@@ -45,11 +48,11 @@ def read_single_tfrecord(tfrecord_file, batch_size, net):
     )
     label = tf.reshape(label, [batch_size])
     roi = tf.reshape(roi,[batch_size,4])
-    print("---------------read single{}----------------".format(landmark.shape))
+    #print("---------------read single{}----------------".format(image_features))
 
     landmark = tf.reshape(landmark,[batch_size,landmark_number])
-    print("---------------read single 2{}----------------".format(landmark.shape))
 
+    #print ("********sing***********{}".format(landmark[0]))
     return image, label, roi,landmark
 
 def read_multi_tfrecords(tfrecord_files, batch_sizes, net):
@@ -60,9 +63,11 @@ def read_multi_tfrecords(tfrecord_files, batch_sizes, net):
     part_image,part_label,part_roi,part_landmark = read_single_tfrecord(part_dir, part_batch_size, net)
     neg_image,neg_label,neg_roi,neg_landmark = read_single_tfrecord(neg_dir, neg_batch_size, net)
     landmark_image,landmark_label,landmark_roi,landmark_landmark = read_single_tfrecord(landmark_dir, landmark_batch_size, net)
+    print ("********multi***********{}".format(landmark_landmark[0][0]))
 
     images = tf.concat([pos_image,part_image,neg_image,landmark_image], 0, name="concat/image")
     labels = tf.concat([pos_label,part_label,neg_label,landmark_label],0,name="concat/label")
     rois = tf.concat([pos_roi,part_roi,neg_roi,landmark_roi],0,name="concat/roi")
     landmarks = tf.concat([pos_landmark,part_landmark,neg_landmark,landmark_landmark],0,name="concat/landmark")
+
     return images,labels,rois,landmarks
